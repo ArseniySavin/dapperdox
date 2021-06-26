@@ -1,3 +1,5 @@
+Title: Intro
+Navigation: About
 SortOrder: 100
 
 # Gihub Flavoured Markdown example

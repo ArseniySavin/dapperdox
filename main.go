@@ -42,7 +42,7 @@ import (
 	"github.com/justinas/nosurf"
 )
 
-var VERSION string = "1.2.1"
+var VERSION string = "1.2.3"
 var tlsEnabled bool
 
 // ---------------------------------------------------------------------------

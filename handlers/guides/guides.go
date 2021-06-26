@@ -173,16 +173,11 @@ func buildNavigation(nav *navigation.NavigationNode, path string, path_base stri
 	logger.Tracef(nil, "      - Look for metadata asset %s\n", path)
 
 	// See if guide has been marked up with nagivation metadata...
-	hierarchy := asset.MetaData(path, "Navigation")
 	sortOrder := asset.MetaData(path, "SortOrder")
+	navTitle := asset.MetaData(path, "Navigation")
+	title := asset.MetaData(path, "Title")
 
-	if len(hierarchy) > 0 {
-		logger.Tracef(nil, "      * Got navigation metadata %s for file %s\n", hierarchy, path)
-	} else {
-		// No Meta Data set on guide, so use the directory structure
-		hierarchy = strings.TrimPrefix(strings.TrimSuffix(path, ext), path_base+"/")
-		logger.Tracef(nil, "      * No navigation metadata for "+hierarchy+". Using path")
-	}
+	hierarchy := strings.TrimPrefix(strings.TrimSuffix(path, ext), path_base+"/")
 
 	// Break hierarchy into bits
 	split := strings.Split(hierarchy, "/")
@@ -207,6 +202,14 @@ func buildNavigation(nav *navigation.NavigationNode, path string, path_base stri
 		id := strings.Replace(strings.ToLower(name), " ", "-", -1)
 		id = strings.Replace(id, ".", "-", -1)
 
+		if navTitle == "" {
+			logger.Warnf(nil, "      + metadata Navigation doesn't set. Default use file name: %s\n", name)
+			navTitle = name
+		} else if title == "" {
+			logger.Warnf(nil, "      + metadata Title doesn't set. Default use folder name: %s\n", name)
+			title = name
+		}
+
 		if i < parts-1 {
 			// Have we already created this branch node?
 			if currentItem, ok := current[id]; !ok {
@@ -214,7 +217,7 @@ func buildNavigation(nav *navigation.NavigationNode, path string, path_base stri
 				current[id] = &navigation.NavigationNode{
 					Id:        id,
 					SortOrder: sortOrder,
-					Name:      name,
+					Name:      navTitle,
 					ChildMap:  make(map[string]*navigation.NavigationNode),
 					Children:  make([]*navigation.NavigationNode, 0),
 				}
@@ -237,7 +240,7 @@ func buildNavigation(nav *navigation.NavigationNode, path string, path_base stri
 					Id:        id,
 					SortOrder: sortOrder,
 					Uri:       route,
-					Name:      name,
+					Name:      title,
 					ChildMap:  make(map[string]*navigation.NavigationNode),
 					Children:  make([]*navigation.NavigationNode, 0),
 				}
