@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2016-2017 dapperdox.com 
+Copyright (C) 2016-2017 dapperdox.com
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package config
 
 import (
+	"fmt"
 	"reflect"
 	"strings"
 
@@ -97,6 +98,15 @@ func (c *config) print() {
 		if !s.Field(i).CanSet() {
 			continue
 		}
-		logger.Printf(nil, "\t%s%s: %s\n", strings.Repeat(" ", ml-len(t.Field(i).Name)), t.Field(i).Name, f.Interface())
+		logger.Printf(nil, "\t%s%s: %s\n", strings.Repeat(" ", ml-len(t.Field(i).Name)), t.Field(i).Name, c.printVal(f.Interface()))
+	}
+}
+
+func (c *config) printVal(i interface{}) string {
+	switch t := i.(type) {
+	case bool:
+		return fmt.Sprintf("%t", t)
+	default:
+		return fmt.Sprintf("%s", t)
 	}
 }
