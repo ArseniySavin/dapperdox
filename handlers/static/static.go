@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2016-2017 dapperdox.com 
+Copyright (C) 2016-2017 dapperdox.com
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -54,7 +54,9 @@ func Register(r *pat.Router) {
 		switch {
 		case strings.HasPrefix(mimeType, "image"),
 			strings.HasPrefix(mimeType, "text/css"),
-			strings.HasSuffix(mimeType, "javascript"):
+			strings.HasSuffix(mimeType, "javascript"),
+			strings.HasPrefix(mimeType, "application/json"),
+			strings.HasPrefix(mimeType, "text/plain"):
 			allow = true
 		default:
 			allow = false
@@ -71,7 +73,10 @@ func Register(r *pat.Router) {
 					w.Header().Set("Content-Type", mimeType)
 					w.Header().Set("Cache-control", "public, max-age=259200")
 					w.WriteHeader(200)
-					w.Write(b)
+					_, err = w.Write(b)
+					if err == nil {
+						logger.Errorf(nil, "cannot write response", err.Error())
+					}
 					return
 				}
 				// This should never happen!
